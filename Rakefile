@@ -85,4 +85,46 @@ task :publish, [:revision] do |_, args|
   system "git push origin #{current_branch}"
   puts "-> all complete!"  
 end
+
+BUILD_OPTIONS = {
+  windows: ['386', 'amd64'],
+  linux: ['386', 'amd64'],
+  macos: ['amd64'],
+}
+
+namespace :build do
+  task :do, [:goos, :goarch, :target] do |_, args|
+    rm_rf %w(build)
+    system %{
+      cd cmd/scraper-cli &&
+      GOOS="#{args.goos}" GOARCH="#{args.goarch}" go build -o ../../build/#{args.target}
+    }
+    puts "-> build completed: build/#{args.target}"
+  end
+  
+  desc "Build for Windows, available architecture(s): #{BUILD_OPTIONS[:windows].join(',')} default: #{BUILD_OPTIONS[:windows][1]}"
+  task :windows, [:arch] do |_, args|
+    args.with_defaults(arch: BUILD_OPTIONS[:windows][1])
+
+    abort "Please provide valid arch: #{BUILD_OPTIONS[:windows].join(',')}" unless BUILD_OPTIONS[:windows].include?(args.arch)
+    Rake::Task["build:do"].invoke("windows", args.arch, "scraper-cli-#{args.arch}.exe")
+  end
+
+  desc "Build for Linux, available architecture(s): #{BUILD_OPTIONS[:linux].join(',')} default: #{BUILD_OPTIONS[:linux][1]}"
+  task :linux, [:arch] do |_, args|
+    args.with_defaults(arch: BUILD_OPTIONS[:linux][1])
+
+    abort "Please provide valid arch: #{BUILD_OPTIONS[:linux].join(',')}" unless BUILD_OPTIONS[:linux].include?(args.arch)
+    Rake::Task["build:do"].invoke("linux", args.arch, "scraper-cli-linux-#{args.arch}")
+  end
+
+  desc "Build for macOS, available architecture(s): #{BUILD_OPTIONS[:macos].join(',')} default: #{BUILD_OPTIONS[:macos][0]}"
+  task :macos, [:arch] do |_, args|
+    args.with_defaults(arch: BUILD_OPTIONS[:macos][0])
+
+    abort "Please provide valid arch: #{BUILD_OPTIONS[:macos].join(',')}" unless BUILD_OPTIONS[:macos].include?(args.arch)
+    Rake::Task["build:do"].invoke("darwin", args.arch, "scraper-cli-macos-#{args.arch}")
+  end
+
+end
 # -----------------------------------------------------------------------------
