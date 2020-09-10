@@ -47,27 +47,8 @@ task :test, [:verbose] do |_, args|
   system "go test #{args.verbose} ./..."
 end
 
-desc "Run doc server"
-task :serve_doc, [:port] do |_, args|
-  args.with_defaults(port: 6060)
-  url = "http://127.0.0.1:#{args.port}"
-
-  pages = [
-    'scraper-cli', 
-  ]
-
-  puts "Doc server is running at: #{url}...\n\n"
-  pages.each do |u|
-    puts "#{url}/pkg/github.com/promptapi/#{u}/"
-  end
-  puts "\n"
-
-  system "godoc -http=:#{args.port}"
-end
-
 ORGANIZATION_NAME = "promptapi"
 REPO_NAME = "scraper-cli"
-
 
 desc "Publish project with revision: #{AVAILABLE_REVISIONS.join(',')}, default: patch"
 task :publish, [:revision] do |_, args|
