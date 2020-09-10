@@ -20,7 +20,7 @@ from your terminal?
 If you have `golang` environment installed, you can fetch via
 
 ```bash
-$ go get -u github.com/promptapi/scraper-cli
+$ go get -u github.com/promptapi/scraper-cli/cmd/scraper-cli
 ```
 
 Or you can download binaries from [releases][releases] page
