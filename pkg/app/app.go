@@ -13,6 +13,7 @@ const (
 
 var (
 	optVersionInformation *bool
+	optURL                *string
 
 	usage = `
 Usage: scraper-cli [options...]
@@ -21,7 +22,6 @@ Usage: scraper-cli [options...]
 
 Options:
 
-  -h, --help            Display help :)
 `
 )
 
@@ -34,8 +34,10 @@ type CLIApplication struct {
 func NewCLIApplication() *CLIApplication {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, usage)
+		flag.PrintDefaults()
 	}
-	optVersionInformation = flag.Bool("version", false, "Current version information")
+	optVersionInformation = flag.Bool("version", false, "display version information")
+	optURL = flag.String("url", "", "web url/address to scrape")
 
 	flag.Parse()
 
@@ -50,7 +52,8 @@ func (c *CLIApplication) Run() error {
 		return c.Version()
 	}
 
-	fmt.Fprintf(c.Out, "Hello world")
+	fmt.Fprintf(c.Out, "url ?? %s\n", *optURL)
+	fmt.Fprintf(c.Out, "Hello world\n\n")
 	return nil
 }
 
