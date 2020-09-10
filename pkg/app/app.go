@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/url"
 	"os"
+
+	scraper "github.com/promptapi/scraper-go"
 )
 
 const (
@@ -16,6 +18,7 @@ var (
 	optVersionInformation *bool
 	optURL                *string
 	optAPIToken           *string
+	optCountryCode        *string
 
 	usage = `
 usage: scraper-cli [options...]
@@ -57,6 +60,7 @@ func NewCLIApplication() *CLIApplication {
 	optVersionInformation = flag.Bool("version", false, "display version information")
 	optURL = flag.String("url", "", "web url/address to scrape")
 	optAPIToken = flag.String("token", "n/a", "use this flag to override PROMPTAPI_TOKEN environment variable")
+	optCountryCode = flag.String("country", "n/a", "2 character country code.")
 
 	flag.Parse()
 
@@ -75,8 +79,7 @@ func (c *CLIApplication) Run() error {
 		return err
 	}
 
-	fmt.Fprintf(c.Out, "it works...\n")
-	return nil
+	return c.Scrape()
 }
 
 // Version returns the current version of CLIApplication
@@ -93,5 +96,27 @@ func (c *CLIApplication) Validate() error {
 		return err
 	}
 
+	return nil
+}
+
+// Scrape fetches given url
+func (c *CLIApplication) Scrape() error {
+	s := new(scraper.PromptAPI)
+
+	params := &scraper.Params{
+		URL: *optURL,
+	}
+
+	if *optCountryCode != "n/a" {
+		params.Country = *optCountryCode
+		fmt.Printf("%v\n", params.Country)
+	}
+
+	result := new(scraper.Result)
+	err := s.Scrape(params, result)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(c.Out, "Content-Length: %v", result.Headers["Content-Length"])
 	return nil
 }
