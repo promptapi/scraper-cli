@@ -17,23 +17,64 @@ from your terminal?
 1. You need to subscribe [scraper api][scraper-api], test drive is **free!!!**
 1. You need to set `PROMPTAPI_TOKEN` environment variable after subscription.
 
-then;
+If you have `golang` environment installed, you can fetch via
 
 ```bash
-$ ...
+$ go get -u github.com/promptapi/scraper-cli
 ```
+
+Or you can download binaries from [releases][releases] page
 
 ---
 
 ## Usage
 
-@wip
+```bash
+$ scraper-cli -h
 
----
+usage: scraper-cli [flags...]
 
-## Development
+  scraper-cli is a command-line interface for Prompt API's Scraper API. Details
+  can be found:
 
-@wip
+      https://promptapi.com/marketplace/description/scraper-api
+
+  you need to signup for Prompt API to get your PROMPTAPI_TOKEN. you can signup
+  from:
+
+      https://promptapi.com/#signup-form
+
+  application looks for PROMPTAPI_TOKEN environment variable. if you pass 
+  "token" flag, this will override environment variable lookup.
+
+  required flag(s):
+
+  -url          web url/address to scrape
+
+
+  optional flags:
+
+  -country      2 character country code
+  -token        promptapi apikey instead of PROMPTAPI_TOKEN env-var
+  -username     for HTTP Realm auth username
+  -password     for HTTP Realm auth password
+  -cookie       URL Encoded cookie header
+  -referer      HTTP referer header
+  -selector     CSS style selector path such as: a.btn div li
+  -version      display version information
+  -help, -h     display help
+
+
+  examples:
+
+  $ scraper-cli -help
+  $ scraper-cli -url "https://promptapi.com"
+  $ scraper-cli -url "https://promptapi.com" -country "EE"
+  $ scraper-cli -url "https://promptapi.com" -country "EE" -selector "a.btn div li"
+
+  $ PROMPTAPI_TOKEN="your-api-key" scraper-cli -url "https://promptapi.com"
+  $ scraper-cli -url "https://promptapi.com" -token "your-api-key"
+```
 
 ---
 
@@ -68,3 +109,4 @@ the [code of conduct][coc].
 [scraper-api]:      https://promptapi.com/marketplace/description/scraper-api
 [promptapi-signup]: https://promptapi.com/#signup-form
 [coc]:              https://github.com/promptapi/scraper-cli/blob/main/CODE_OF_CONDUCT.md
+[releases]:         https://github.com/promptapi/scraper-cli/releases
