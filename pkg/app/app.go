@@ -15,13 +15,30 @@ const (
 var (
 	optVersionInformation *bool
 	optURL                *string
+	optAPIToken           *string
 
 	usage = `
-Usage: scraper-cli [options...]
+usage: scraper-cli [options...]
 
-@wip
+  scraper-cli is a command-line interface for Prompt API's Scraper API. Details
+  can be found:
 
-Options:
+  https://promptapi.com/marketplace/description/scraper-api
+
+  you need to signup for Prompt API to get your PROMPTAPI_TOKEN. you can signup
+  from:
+
+  https://promptapi.com/#signup-form
+
+  application looks for PROMPTAPI_TOKEN environment variable. if you pass 
+  "token" flag, this will override environment variable lookup.
+
+  example token usage:
+
+      $ PROMPTAPI_TOKEN="your-api-key" scraper-cli -url "https://promptapi.com" # or
+      $ scraper-cli -url "https://promptapi.com" -token "your-api-key"
+
+  options:
 
 `
 )
@@ -39,6 +56,7 @@ func NewCLIApplication() *CLIApplication {
 	}
 	optVersionInformation = flag.Bool("version", false, "display version information")
 	optURL = flag.String("url", "", "web url/address to scrape")
+	optAPIToken = flag.String("token", "n/a", "use this flag to override PROMPTAPI_TOKEN environment variable")
 
 	flag.Parse()
 
@@ -57,8 +75,7 @@ func (c *CLIApplication) Run() error {
 		return err
 	}
 
-	fmt.Fprintf(c.Out, "url ?? %s\n", *optURL)
-	fmt.Fprintf(c.Out, "Hello world\n\n")
+	fmt.Fprintf(c.Out, "it works...\n")
 	return nil
 }
 
