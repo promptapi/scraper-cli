@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 )
 
@@ -52,6 +53,10 @@ func (c *CLIApplication) Run() error {
 		return c.Version()
 	}
 
+	if err := c.Validate(); err != nil {
+		return err
+	}
+
 	fmt.Fprintf(c.Out, "url ?? %s\n", *optURL)
 	fmt.Fprintf(c.Out, "Hello world\n\n")
 	return nil
@@ -60,5 +65,16 @@ func (c *CLIApplication) Run() error {
 // Version returns the current version of CLIApplication
 func (c *CLIApplication) Version() error {
 	fmt.Fprintf(c.Out, "%s\n", version)
+	return nil
+}
+
+// Validate runs validations for flags
+func (c *CLIApplication) Validate() error {
+	// validate given URL
+	_, err := url.ParseRequestURI(*optURL)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
