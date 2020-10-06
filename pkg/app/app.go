@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"strings"
 
 	scraper "github.com/promptapi/scraper-go"
 )
@@ -26,6 +27,7 @@ var (
 	optCookie             *string
 	optReferer            *string
 	optSelector           *string
+	optHeaders            headersFlag
 
 	usage = `
 usage: scraper-cli [flags...]
@@ -58,6 +60,7 @@ usage: scraper-cli [flags...]
   -referer      HTTP referer header
   -selector     CSS style selector path such as: a.btn div li
   -version      display version information
+  -header       request header(s)
   -help, -h     display help
 
 
@@ -70,10 +73,23 @@ usage: scraper-cli [flags...]
 
   $ PROMPTAPI_TOKEN="your-api-key" scraper-cli -url "https://promptapi.com"
   $ scraper-cli -url "https://promptapi.com" -token "your-api-key"
+  $ scraper-cli -url "https://promptapi.com" -token "your-api-key" -header "X-Referer: https://www.google.com"
+  $ scraper-cli -url "https://promptapi.com" -token "your-api-key" -header "X-Referer: https://www.google.com" -header "X-Custom-Header: Hello"
 
 
 `
 )
+
+type headersFlag []string
+
+func (h *headersFlag) String() string {
+	return "headers"
+}
+
+func (h *headersFlag) Set(value string) error {
+	*h = append(*h, strings.TrimSpace(value))
+	return nil
+}
 
 // CLIApplication represents app structure
 type CLIApplication struct {
@@ -94,6 +110,7 @@ func NewCLIApplication() *CLIApplication {
 	optCookie = flag.String("cookie", "n/a", "URL Encoded cookie header")
 	optReferer = flag.String("referer", "n/a", "HTTP referer header")
 	optSelector = flag.String("selector", "n/a", "CSS style selector path such as: a.btn div li")
+	flag.Var(&optHeaders, "header", "")
 
 	flag.Parse()
 
@@ -164,7 +181,19 @@ func (c *CLIApplication) Scrape() error {
 	}
 
 	result := new(scraper.Result)
-	err := s.Scrape(params, result)
+	extraHeaders := []*scraper.ExtraHeader{}
+
+	if len(optHeaders) > 0 {
+		for _, headerValue := range optHeaders {
+			valuePair := strings.Split(headerValue, ":")
+			reqHeader := new(scraper.ExtraHeader)
+			reqHeader.Name = valuePair[0]
+			reqHeader.Value = valuePair[1]
+			extraHeaders = append(extraHeaders, reqHeader)
+		}
+	}
+
+	err := s.Scrape(params, extraHeaders, result)
 	if err != nil {
 		return err
 	}

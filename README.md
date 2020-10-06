@@ -62,6 +62,7 @@ usage: scraper-cli [flags...]
   -referer      HTTP referer header
   -selector     CSS style selector path such as: a.btn div li
   -version      display version information
+  -header       request header(s)
   -help, -h     display help
 
 
@@ -74,6 +75,8 @@ usage: scraper-cli [flags...]
 
   $ PROMPTAPI_TOKEN="your-api-key" scraper-cli -url "https://promptapi.com"
   $ scraper-cli -url "https://promptapi.com" -token "your-api-key"
+  $ scraper-cli -url "https://promptapi.com" -token "your-api-key" -header "X-Referer: https://www.google.com"
+  $ scraper-cli -url "https://promptapi.com" -token "your-api-key" -header "X-Referer: https://www.google.com" -header "X-Custom-Header: Hello"
 ```
 
 ---
