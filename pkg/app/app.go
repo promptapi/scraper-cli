@@ -185,10 +185,11 @@ func (c *CLIApplication) Scrape() error {
 
 	if len(optHeaders) > 0 {
 		for _, headerValue := range optHeaders {
-			valuePair := strings.Split(headerValue, ":")
 			reqHeader := new(scraper.ExtraHeader)
-			reqHeader.Name = valuePair[0]
-			reqHeader.Value = valuePair[1]
+
+			valuePair := strings.SplitAfterN(headerValue, ":", 2)
+			reqHeader.Name = strings.TrimRight(valuePair[0], ":")
+			reqHeader.Value = strings.TrimLeft(valuePair[1], " ")
 			extraHeaders = append(extraHeaders, reqHeader)
 		}
 	}
